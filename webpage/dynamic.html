@@ -1,0 +1,256 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <script src="JsBarcode.all.js"></script>
+        <script>
+            function updateCode() {
+                
+                var codeTextValue = document.getElementById("codeValue").value;
+                
+                //var preCodeTextValue = codeTextValue.substring(0,11).split("");
+                
+                //alert( preCodeTextValue );
+                
+                //alert( codeTextValue.charCodeAt(0) );
+                                    
+                var checksumTemp = (codeTextValue.charCodeAt(0) - 48) + (codeTextValue.charCodeAt(2) - 48) + (codeTextValue.charCodeAt(4) - 48) + (codeTextValue.charCodeAt(6) - 48) + (codeTextValue.charCodeAt(8) - 48) + (codeTextValue.charCodeAt(10) - 48);
+                
+                checksumTemp *= 3;
+                
+                checksumTemp += (codeTextValue.charCodeAt(1) - 48) + (codeTextValue.charCodeAt(3) - 48) + (codeTextValue.charCodeAt(5) - 48) + (codeTextValue.charCodeAt(7) - 48) + (codeTextValue.charCodeAt(9) - 48);
+                
+                var mod = checksumTemp % 10;
+                
+                var checksum = 0;
+                
+                if (mod != 0)
+                {
+                  checksum = 10 - mod;
+                }
+                else
+                {
+                  checksum = checksumTemp;
+                }
+                
+                if (checksum > 10)
+                {
+                    checksum = 0;
+                }
+                
+                //alert( checksum );
+                
+                codeTextValue += String.fromCharCode( checksum + 48 )
+                
+                //alert( codeTextValue );
+                
+                
+                try {
+                    
+                    JsBarcode("#barcode2", codeTextValue, {
+                    format:"upc",
+                    displayValue:true,
+                    width: 16,
+                    height: 800,
+                    fontSize: 200,
+                    lineColor: "#000"
+                    });
+
+                    document.getElementById("logText").setAttribute("class", "greenLogText");
+                    document.getElementById("logText").innerHTML = "Generated code successfully.<br> Checksum: " + String.fromCharCode( checksum + 48 ) ;
+                    console.log("Generated code successfully. Checksum: " + String.fromCharCode( checksum + 48 ) );                                  
+                    
+                }
+                catch(err) {
+                    document.getElementById("logText").setAttribute("class", "redLogText");
+                    document.getElementById("logText").innerHTML = "Error in code.";
+                    console.log("Error in code. " + err);            
+                }
+                
+                
+            }
+            
+            function checkCodeTyping(event) {
+                
+                //console.log(event.code);
+                
+                if ( ( event.code == "Enter" ) || ( event.code == "NumpadEnter" ) )
+                {
+                    return;
+                }
+                
+                var codeTextValue = document.getElementById("codeValue").value;
+              
+                var lastChar = codeTextValue.substr( codeTextValue.length - 1, 1); 
+                
+                var error = false;
+            
+                if ( (lastChar.charCodeAt() < 48) || (lastChar.charCodeAt() > 57) )
+                {
+                    error = true;                    
+                }
+                
+                if ( codeTextValue.length > 11 )
+                {
+                    error = true;
+                }
+                
+                if ( codeTextValue.length < 11 )
+                {
+                    if (codeTextValue.length > 0)
+                    {
+                        document.getElementById("logText").setAttribute("class", "orangelogText"); 
+                        document.getElementById("logText").innerHTML = "Not enough numbers in code...";
+                           
+                    }
+                    else if ( codeTextValue.length == 0)
+                    {
+                        document.getElementById("logText").setAttribute("class", "blackLogText");
+                        document.getElementById("logText").innerHTML = "";         
+                    }
+                    else
+                    {
+                        document.getElementById("logText").setAttribute("class", "greenLogText");
+                        document.getElementById("logText").innerHTML = "That should work.  :)";
+                        
+                    }
+                    return;
+                }
+
+                
+                if (error == true)
+                {
+                    document.getElementById("logText").setAttribute("class", "redlogText");
+                    document.getElementById("logText").innerHTML = "Error in code.";
+                }
+                else
+                {
+                    document.getElementById("logText").setAttribute("class", "greenLogText");
+                    document.getElementById("logText").innerHTML = "That should work.  :)";
+                }
+                
+            }
+        </script>
+        <style>
+            div {
+                display: grid;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%
+                place-items: center;
+                text-align: center;
+            }
+            
+            input {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+                padding: 12px 20px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;  
+                font-size: 40;
+                
+            }
+    
+            
+            img {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+                height: auto;
+                
+            }
+            
+            button {
+                display: block;
+                margin-top: 50px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+                height: 60px;
+                border-radius: 7px;
+                font-size: 40;
+                font-weight: 900;
+            }
+            
+            p {
+                font-family: sans-serif;
+                font-size: 20;
+                font-weight: 900;
+            }
+            
+            #logText {
+                font-family: sans-serif;
+                font-size: 30;
+                font-weight: 900;
+            }
+            
+            .redlogText {
+                color: red;
+            }
+            
+            .blackLogText {
+                color: black;
+            }
+            
+            .orangeLogText {
+                color: orange;
+            }
+            
+            .greenLogText {
+                color: green;
+            }
+            
+
+        </style>
+        
+    </head>
+    
+    <body>
+        <div>
+            <img id="barcode2" style="align-content: center;"/>
+            
+            <script>
+                JsBarcode("#barcode2", "605388881243", {
+                format:"upc",
+                displayValue:true,
+                width: 16,
+                height: 800,
+                fontSize: 200,
+                lineColor: "#000"
+                });
+            </script>
+            
+        </div>
+        
+        <br><br><br><br>
+
+        <div>
+            <form onsubmit="return false;">
+            
+                <input type="text" id="codeValue" value="60538888124" onkeyup="checkCodeTyping(event)">
+
+                <button type="sumbit" onclick="updateCode()">Generate</button>
+
+            </form>
+        </div>
+
+        <div>
+            <br><br>
+            <div id="logText"></div>
+        </div>
+        
+        <div>
+            <br><br><br>
+            <p style="color: grey">06038375878(3)</p>
+            <p style="color: grey">60538888124(3)</p>  
+            <p style="color: grey">07033060315(8)</p>
+        </div>
+        
+        
+
+    </body>
+</html>
